@@ -12,6 +12,89 @@ internal class Program
     {
         DatabaseServices.DBConnectionCheck(connectionString);
         SelectAll(connectionString, "szallas");
+        Elerheto(szallasList);
+        EzernelTobb(szallasList);
+        ErtekeleseNagyobb4(szallasList);
+        LegjobbErtekelesu(szallasList);
+        ArTartomany(szallasList);
+    }
+
+    private static void ArTartomany(List<Szallas> szallasList,double max,double min)
+    {
+
+        Console.WriteLine($"Ár {min} - {max} között");
+
+        foreach (Szallas sz in szallasList)
+        {
+            if (sz.Price >= min && sz.Price <= max)
+            {
+                Console.WriteLine($"{sz.PopertyName} - {sz.Price}");
+            }
+        }
+    }
+
+    private static void LegjobbErtekelesu(List<Szallas> szallasLis)
+    {
+
+        Szallas legjobb = null;
+
+        foreach (Szallas sz in szallasList)
+        {
+            if (legjobb == null || sz.Rating > legjobb.Rating)
+            {
+                legjobb = sz;
+            }
+        }
+
+        if (legjobb != null)
+        {
+            Console.WriteLine("Legjobb értékelésű szállás");
+            Console.WriteLine($"{legjobb.PopertyName} - Értékelés: {legjobb.Rating}");
+        }
+    }
+
+    private static void ErtekeleseNagyobb4(List<Szallas> szallasLis)
+    {
+        Console.WriteLine("4 feletti értékelésű szállások ");
+
+        foreach (Szallas sz in szallasList)
+        {
+            if (sz.Rating > 4)
+            {
+                Console.WriteLine($"{sz.PopertyName} - Értékelés: {sz.Rating}");
+            }
+        }
+    }
+
+    private static void Elerheto(List<Szallas> szallasLis)
+    {
+        Console.WriteLine(" Elérhető szállások");
+
+        foreach (Szallas sz in szallasList)
+        {
+            if (sz.Avaibality)
+            {
+                Console.WriteLine($"{sz.PopertyName} ({sz.Location})");
+            }
+        }
+    }
+
+    private static void EzernelTobb(List<Szallas> szallasLis)
+    {
+        Console.WriteLine("1000-nél drágább szállások");
+
+        foreach (Szallas sz in szallasList)
+        {
+            if (sz.Price > 1000)
+            {
+                Console.WriteLine($"{sz.PopertyName} - Ár: {sz.Price}");
+            }
+        }
+
+    }
+
+    private static void NewMethod()
+    {
         SzallasFeltoltes(adatok);
     }
 
