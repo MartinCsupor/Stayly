@@ -46,5 +46,17 @@ namespace Stayly.Database
 
             return dataTable;
         }
+
+        public static int deleteData(string connectionString, string table, string query_parameters)
+        {
+            using var connection = new MySqlConnection(connectionString);
+            connection.Open();
+
+            using var command = new MySqlCommand($"DELETE FROM {table} WHERE {query_parameters}", connection);
+
+            int affectedRows = command.ExecuteNonQuery();
+
+            return affectedRows;
+        }
     }
 }

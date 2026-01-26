@@ -51,7 +51,12 @@ namespace Stayly.Model
             CheckOutTime = checkOutTime;
         }
 
-        public Szallas() 
-        {}
+        public Szallas()
+        { }
+
+        public override string ToString()
+        {
+            return $"{Id} {HostName} {PopertyName} {Location} {Price} {Rating} {Avaibality} {CheckInTime} {CheckOutTime}";
+        }
     }
 }
