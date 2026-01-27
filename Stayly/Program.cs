@@ -13,30 +13,37 @@ internal class Program
     {
         DatabaseServices.DBConnectionCheck(connectionString);
         SelectAll(connectionString, "szallas");
+        SzallasFeltoltes(adatok);
+        SzallasFoglalas(szallasList);
         Elerheto(szallasList);
         EzernelTobb(szallasList);
         ErtekeleseNagyobb4(szallasList);
         LegjobbErtekelesu(szallasList);
-        ArTartomany(szallasList);
+        SzallasokVarosSzerint(szallasList);
+
+
     }
 
-    private static void ArTartomany(List<Szallas> szallasList,double max,double min)
+
+    private static void SzallasokVarosSzerint(List<Szallas> lista)
     {
+        Console.WriteLine()
+;        Console.WriteLine("Add meg a várost:");
+        string varos = Console.ReadLine();
 
-        Console.WriteLine($"Ár {min} - {max} között");
-
-        foreach (Szallas sz in szallasList)
+        foreach (var sz in lista)
         {
-            if (sz.Price >= min && sz.Price <= max)
+            if (sz.Location.Equals(varos, StringComparison.OrdinalIgnoreCase))
             {
-                Console.WriteLine($"{sz.PopertyName} - {sz.Price}");
+                Console.WriteLine($"{sz.PopertyName} - {sz.Price} - {sz.Avaibality}");
             }
         }
     }
 
+
     private static void LegjobbErtekelesu(List<Szallas> szallasLis)
     {
-
+        Console.WriteLine();
         Szallas legjobb = null;
 
         foreach (Szallas sz in szallasList)
@@ -56,6 +63,7 @@ internal class Program
 
     private static void ErtekeleseNagyobb4(List<Szallas> szallasLis)
     {
+        Console.WriteLine();
         Console.WriteLine("4 feletti értékelésű szállások ");
 
         foreach (Szallas sz in szallasList)
@@ -69,6 +77,7 @@ internal class Program
 
     private static void Elerheto(List<Szallas> szallasLis)
     {
+        Console.WriteLine();
         Console.WriteLine(" Elérhető szállások");
 
         foreach (Szallas sz in szallasList)
@@ -82,6 +91,7 @@ internal class Program
 
     private static void EzernelTobb(List<Szallas> szallasLis)
     {
+        Console.WriteLine();
         Console.WriteLine("1000-nél drágább szállások");
 
         foreach (Szallas sz in szallasList)
@@ -96,21 +106,46 @@ internal class Program
 
     private static void NewMethod()
     {
-        SzallasFeltoltes(adatok);
+       // SzallasFeltoltes(adatok);
         OsszesKiiras(szallasList);
-        SzallasFoglalas(szallasList);
+       // SzallasFoglalas(szallasList);
     }
 
     private static void SzallasFoglalas(List<Szallas> szallasList)
     {
-        Console.WriteLine("Add meg a foglalandó szállás nevét");
-        var szallas = Console.ReadLine();
+        Console.WriteLine("Add meg a foglalandó szállás nevét:");
+        string keresettNev = Console.ReadLine();
+
+        Szallas talaltSzallas = null;
 
         foreach (var item in szallasList)
         {
-            
+            if (item.PopertyName.Equals(keresettNev, StringComparison.OrdinalIgnoreCase))
+            {
+                talaltSzallas = item;
+                break;
+            }
+        }
+
+        if (talaltSzallas == null)
+        {
+            Console.WriteLine("Nincs ilyen nevű szállás.");
+            return;
+        }
+
+        if (talaltSzallas.Avaibality)
+        {
+            talaltSzallas.Avaibality = false;
+            Console.WriteLine("Foglalás sikeres! 🎉");
+            Console.WriteLine($"Bejelentkezés: {talaltSzallas.CheckInTime}");
+            Console.WriteLine($"Kijelentkezés: {talaltSzallas.CheckOutTime}");
+        }
+        else
+        {
+            Console.WriteLine("Ez a szállás már nem elérhető.");
         }
     }
+
 
     private static void OsszesKiiras(List<Szallas> szallasList)
     {
