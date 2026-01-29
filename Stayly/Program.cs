@@ -1,16 +1,20 @@
-﻿using Stayly.Database;
+﻿using MySqlConnector;
+using Stayly.Database;
 using Stayly.Model;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Diagnostics;
+
 
 internal class Program
 {
     public static readonly string connectionString = "Server=localhost;Database=stayly;User=root";
     public static DataTable adatok = new DataTable();
     public static List<Szallas> szallasList = new List<Szallas>();
+
     private static void Main(string[] args)
     {
+       
         DatabaseServices.DBConnectionCheck(connectionString);
         SelectAll(connectionString, "szallas");
         SzallasFeltoltes(adatok);
@@ -20,10 +24,76 @@ internal class Program
         ErtekeleseNagyobb4(szallasList);
         LegjobbErtekelesu(szallasList);
         SzallasokVarosSzerint(szallasList);
+        SzallasFelvetel(adatok);
+
 
 
     }
 
+    private static void SzallasFelvetel(DataTable adatok)
+    {
+        Console.WriteLine("\n--- Új szállás felvétele ---");
+
+        Console.Write("Host neve: ");
+        string hostName = Console.ReadLine();
+
+        Console.Write("Szállás neve: ");
+        string propertyName = Console.ReadLine();
+
+        Console.Write("Város: ");
+        string location = Console.ReadLine();
+
+        Console.Write("Ár (pl. 18500): ");
+        double price = Convert.ToDouble(Console.ReadLine());
+
+        Console.Write("Értékelés (0–10): ");
+        double rating = Convert.ToDouble(Console.ReadLine());
+
+        Console.Write("Bejelentkezés ideje (pl. 14:00): ");
+        string checkIn = Console.ReadLine();
+
+        Console.Write("Kijelentkezés ideje (pl. 10:00): ");
+        string checkOut = Console.ReadLine();
+
+        Console.Write("Elérhető? (1 = igen, 0 = nem): ");
+        int elerheto = Convert.ToInt32(Console.ReadLine());
+
+        string query = "INSERT INTO szallas (hostName, popertyName, location, price, rating, checkInTime, checkOutTime, elerhetoseg) " +
+                       "VALUES (@host, @name, @loc, @price, @rating, @checkIn, @checkOut, @ava)";
+
+        try
+        {
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            {
+                conn.Open();
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@host", hostName);
+                    cmd.Parameters.AddWithValue("@name", propertyName);
+                    cmd.Parameters.AddWithValue("@loc", location);
+                    cmd.Parameters.AddWithValue("@price", price);
+                    cmd.Parameters.AddWithValue("@rating", rating);
+                    cmd.Parameters.AddWithValue("@checkIn", checkIn);
+                    cmd.Parameters.AddWithValue("@checkOut", checkOut);
+                    cmd.Parameters.AddWithValue("@ava", elerheto);
+
+                    int result = cmd.ExecuteNonQuery();
+                    if (result > 0)
+                    {
+                        Console.WriteLine(" Szállás sikeresen felvéve az adatbázisba!");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Nem sikerült a beszúrás!");
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Hiba történt: {ex.Message}");
+        }
+    }
 
     private static void SzallasokVarosSzerint(List<Szallas> lista)
     {
@@ -136,7 +206,7 @@ internal class Program
         if (talaltSzallas.Avaibality)
         {
             talaltSzallas.Avaibality = false;
-            Console.WriteLine("Foglalás sikeres! 🎉");
+            Console.WriteLine("Foglalás sikeres!");
             Console.WriteLine($"Bejelentkezés: {talaltSzallas.CheckInTime}");
             Console.WriteLine($"Kijelentkezés: {talaltSzallas.CheckOutTime}");
         }
