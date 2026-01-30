@@ -57,7 +57,18 @@ namespace Stayly.Model
 
         public override string ToString()
         {
-            return $"{Id} {HostName} {PopertyName} {Location} {Price} {Rating} {Avaibality} {CheckInTime} {CheckOutTime}";
+            return string.Format(
+                "{0,-13} | {1,-25} | {2,-32} | {3,-25} | {4,20:N0} Ft | {5,9} | {6,-15} | {7,-15} | {8,-15}",
+                 Id,
+                 HostName,
+                 PopertyName,
+                 Location,
+                 Price,
+                 Rating,
+                 Avaibality ? "Igen" : "Nem",
+                 CheckInTime,
+                 CheckOutTime
+             );
         }
     }
 }
