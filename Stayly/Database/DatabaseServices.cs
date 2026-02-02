@@ -1,8 +1,10 @@
 ﻿using MySqlConnector;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -57,6 +59,39 @@ namespace Stayly.Database
             int affectedRows = command.ExecuteNonQuery();
 
             return affectedRows;
+        }
+        
+        public static string szallasFeltoltes(string connectionString, string hostName, string propertyName, string location, double price, double rating, string checkIn, string checkOut, int elerheto)
+        {
+
+            using var connection = new MySqlConnection(connectionString);
+            connection.Open();
+
+            string query = "INSERT INTO szallas (hostName, popertyName, location, price, rating, checkInTime, checkOutTime, elerhetoseg) " +
+                       "VALUES (@host, @name, @loc, @price, @rating, @checkIn, @checkOut, @ava)";
+
+            using var command = new MySqlCommand(query, connection);
+
+            command.Parameters.AddWithValue("@host", hostName);
+            command.Parameters.AddWithValue("@name", propertyName);
+            command.Parameters.AddWithValue("@loc", location);
+            command.Parameters.AddWithValue("@price", price);
+            command.Parameters.AddWithValue("@rating", rating);
+            command.Parameters.AddWithValue("@checkIn", checkIn);
+            command.Parameters.AddWithValue("@checkOut", checkOut);
+            command.Parameters.AddWithValue("@ava", elerheto); 
+            
+            int result = command.ExecuteNonQuery();
+            if (result > 0)
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                return "Szállás sikeresen felvéve az adatbázisba!";
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                return "Nem sikerült a beszúrás!";
+            }
         }
     }
 }

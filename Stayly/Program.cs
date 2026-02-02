@@ -58,41 +58,10 @@ internal class Program
         Console.Write("Elérhető? (1 = igen, 0 = nem): ");
         int elerheto = Convert.ToInt32(Console.ReadLine().Trim());
 
-        string query = "INSERT INTO szallas (hostName, popertyName, location, price, rating, checkInTime, checkOutTime, elerhetoseg) " +
-                       "VALUES (@host, @name, @loc, @price, @rating, @checkIn, @checkOut, @ava)";
+        var eredmeny = DatabaseServices.szallasFeltoltes(connectionString, hostName, propertyName, location, price, rating, checkIn, checkOut, elerheto);
 
-        try
-        {
-            using (MySqlConnection conn = new MySqlConnection(connectionString))
-            {
-                conn.Open();
-                using (MySqlCommand cmd = new MySqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@host", hostName);
-                    cmd.Parameters.AddWithValue("@name", propertyName);
-                    cmd.Parameters.AddWithValue("@loc", location);
-                    cmd.Parameters.AddWithValue("@price", price);
-                    cmd.Parameters.AddWithValue("@rating", rating);
-                    cmd.Parameters.AddWithValue("@checkIn", checkIn);
-                    cmd.Parameters.AddWithValue("@checkOut", checkOut);
-                    cmd.Parameters.AddWithValue("@ava", elerheto);
-
-                    int result = cmd.ExecuteNonQuery();
-                    if (result > 0)
-                    {
-                        Console.WriteLine("Szállás sikeresen felvéve az adatbázisba!");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Nem sikerült a beszúrás!");
-                    }
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"❌ Hiba történt: {ex.Message}");
-        }
+        Console.WriteLine(eredmeny);
+        Console.ResetColor();
     }
 
     private static void SzallasokVarosSzerint(List<Szallas> lista)
@@ -107,7 +76,7 @@ internal class Program
 
         foreach (var sz in lista)
         {
-            if (sz.Location.Equals(varos, StringComparison.OrdinalIgnoreCase))
+            if (sz.Location .Equals(varos, StringComparison.OrdinalIgnoreCase))
             {
                 talalhato = true;
                 PopertyName = sz.PopertyName;
@@ -239,7 +208,7 @@ internal class Program
 
             string filePath = "foglalt_szallasok.csv";
 
-            using StreamWriter writer = new StreamWriter(filePath, true);
+            using StreamWriter writer = new StreamWriter(filePath, false);
 
             writer.WriteLine("Id;SzallasNev;Varos;Ar;Ertekeles;CheckIn;CheckOut");
             writer.WriteLine($"{talaltSzallas.Id};{talaltSzallas.PopertyName};{talaltSzallas.Location};{talaltSzallas.Price};{talaltSzallas.Rating};{talaltSzallas.CheckInTime};{talaltSzallas.CheckOutTime}");
@@ -260,7 +229,6 @@ internal class Program
             "{0,-13} | {1,-25} | {2,-32} | {3,-25} | {4,20:N0} Ft | {5,6} | {6,-15} | {7,-15} | {8,-15}",
             "ID", "Host", "Szállás", "Város", "Ár", "Értékelés", "Elérhető", "Becsekkolás", "Kicsekkolás"
         );
-        Console.WriteLine(new string('-', 205));
         Console.ResetColor();
 
         foreach (var szallas in szallasList)
