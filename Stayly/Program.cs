@@ -6,7 +6,6 @@ using System.Data;
 using System.Diagnostics;
 using System.Text;
 
-
 internal class Program
 {
     public static readonly string connectionString = "Server=localhost;Database=stayly;User=root";
@@ -15,7 +14,6 @@ internal class Program
 
     private static void Main(string[] args)
     {
-
         DatabaseServices.DBConnectionCheck(connectionString);
         SelectAll(connectionString, "szallas");
         SzallasFeltoltes(adatok, ref szallasList);
@@ -23,11 +21,54 @@ internal class Program
         SzallasFoglalas(szallasList);
         Elerheto(szallasList);
         EzernelTobb(szallasList, out int dragaDB);
-        Console.WriteLine($"Összesen: {dragaDB} db 1000-nél drágább     szállás");
+        Console.WriteLine($"Összesen: {dragaDB} db 1000-nél drágább szállás");
         ErtekeleseNagyobb4(szallasList);
         LegjobbErtekelesu(szallasList);
         SzallasokVarosSzerint(szallasList);
         SzallasFelvetel(adatok);
+        SzallasTorles();
+    }
+
+    private static void SzallasTorles()
+    {
+        Console.WriteLine("\n--- Szállás törlése az adatbázisból ---");
+        Console.Write("Add meg a törlendő szállás nevét: ");
+        string nev = Console.ReadLine().ToLower().Trim();
+
+        string query = "DELETE FROM szallas WHERE popertyName = @name";
+
+        try
+        {
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            {
+                conn.Open();
+
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@name", nev);
+
+                    int result = cmd.ExecuteNonQuery();
+
+                    if (result > 0)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine("A szállás sikeresen törölve az adatbázisból!");
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Nem található ilyen nevű szállás!");
+                    }
+                    Console.ResetColor();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"Hiba történt a törlés során: {ex.Message}");
+            Console.ResetColor();
+        }
     }
 
     private static void SzallasFelvetel(DataTable adatok)
@@ -35,28 +76,28 @@ internal class Program
         Console.WriteLine("\n--- Új szállás felvétele ---");
 
         Console.Write("Host neve: ");
-        string hostName = Console.ReadLine().Trim();
+        string hostName = Console.ReadLine().ToLower().Trim();
 
         Console.Write("Szállás neve: ");
-        string propertyName = Console.ReadLine().Trim();
+        string propertyName = Console.ReadLine().ToLower().Trim();
 
         Console.Write("Város: ");
-        string location = Console.ReadLine().Trim();
+        string location = Console.ReadLine().ToLower().Trim();
 
         Console.Write("Ár (pl. 18500): ");
-        double price = Convert.ToDouble(Console.ReadLine().Trim());
+        double price = Convert.ToDouble(Console.ReadLine().ToLower().Trim());
 
         Console.Write("Értékelés (0–5): ");
-        double rating = Convert.ToDouble(Console.ReadLine().Trim());
+        double rating = Convert.ToDouble(Console.ReadLine().ToLower().Trim());
 
         Console.Write("Bejelentkezés ideje (pl. 14:00): ");
-        string checkIn = Console.ReadLine().Trim();
+        string checkIn = Console.ReadLine().ToLower().Trim();
 
         Console.Write("Kijelentkezés ideje (pl. 10:00): ");
-        string checkOut = Console.ReadLine().Trim(); ;
+        string checkOut = Console.ReadLine().ToLower().Trim();
 
         Console.Write("Elérhető? (1 = igen, 0 = nem): ");
-        int elerheto = Convert.ToInt32(Console.ReadLine().Trim());
+        int elerheto = Convert.ToInt32(Console.ReadLine().ToLower().Trim());
 
         string query = "INSERT INTO szallas (hostName, popertyName, location, price, rating, checkInTime, checkOutTime, elerhetoseg) " +
                        "VALUES (@host, @name, @loc, @price, @rating, @checkIn, @checkOut, @ava)";
@@ -91,15 +132,14 @@ internal class Program
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"❌ Hiba történt: {ex.Message}");
+            Console.WriteLine($"Hiba történt: {ex.Message}");
         }
     }
 
     private static void SzallasokVarosSzerint(List<Szallas> lista)
     {
-        Console.WriteLine()
-;       Console.WriteLine("Add meg a várost:");
-        string varos = Console.ReadLine().Trim();
+        Console.WriteLine("\nAdd meg a várost:");
+        string varos = Console.ReadLine().ToLower().Trim();
         bool talalhato = false;
         string PopertyName = null;
         double Price = 0;
@@ -107,7 +147,7 @@ internal class Program
 
         foreach (var sz in lista)
         {
-            if (sz.Location.Equals(varos, StringComparison.OrdinalIgnoreCase))
+            if (sz.Location.ToLower().Equals(varos, StringComparison.OrdinalIgnoreCase))
             {
                 talalhato = true;
                 PopertyName = sz.PopertyName;
@@ -119,14 +159,8 @@ internal class Program
         Console.ForegroundColor = Avaibality ? ConsoleColor.Green : ConsoleColor.Red;
         Console.WriteLine(
              talalhato
-                 ?
-                 (
-                     $"{PopertyName} - {Price} - {(Avaibality ? "Igen" : "Nem")}"
-                 )
-                 :
-                (
-                    "Nem található szállás ebben a városban!"
-                )
+                 ? $"{PopertyName} - {Price} Ft - {(Avaibality ? "Igen" : "Nem")}"
+                 : "Nem található szállás ebben a városban!"
          );
         Console.ResetColor();
     }
@@ -146,7 +180,7 @@ internal class Program
 
         if (legjobb != null)
         {
-            Console.WriteLine("Legjobb értékelésű szállás");
+            Console.WriteLine("Legjobb értékelésű szállás:");
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine($"{legjobb.PopertyName} - Értékelés: {legjobb.Rating}");
             Console.ResetColor();
@@ -155,9 +189,7 @@ internal class Program
 
     private static void ErtekeleseNagyobb4(List<Szallas> szallasLis)
     {
-        Console.WriteLine();
-        Console.WriteLine("4 feletti értékelésű szállások ");
-
+        Console.WriteLine("\n4 feletti értékelésű szállások:");
         foreach (Szallas sz in szallasList)
         {
             if (sz.Rating > 4)
@@ -171,9 +203,7 @@ internal class Program
 
     private static void Elerheto(List<Szallas> szallasLis)
     {
-        Console.WriteLine();
-        Console.WriteLine("Elérhető szállások");
-
+        Console.WriteLine("\nElérhető szállások:");
         foreach (Szallas sz in szallasList)
         {
             if (sz.Avaibality)
@@ -188,10 +218,7 @@ internal class Program
     private static void EzernelTobb(List<Szallas> szallasLis, out int darab)
     {
         darab = 0;
-
-        Console.WriteLine();
-        Console.WriteLine("1000-nél drágább szállások");
-
+        Console.WriteLine("\n1000-nél drágább szállások:");
         foreach (Szallas sz in szallasList)
         {
             if (sz.Price > 1000)
@@ -206,14 +233,14 @@ internal class Program
 
     private static void SzallasFoglalas(List<Szallas> szallasList)
     {
-        Console.WriteLine("Add meg a foglalandó szállás nevét:");
-        string keresettNev = Console.ReadLine().Trim();
+        Console.WriteLine("\nAdd meg a foglalandó szállás nevét:");
+        string keresettNev = Console.ReadLine().ToLower().Trim();
 
         Szallas talaltSzallas = null;
 
         foreach (var item in szallasList)
         {
-            if (item.PopertyName.Equals(keresettNev, StringComparison.OrdinalIgnoreCase))
+            if (item.PopertyName.ToLower().Equals(keresettNev, StringComparison.OrdinalIgnoreCase))
             {
                 talaltSzallas = item;
                 break;
@@ -238,9 +265,7 @@ internal class Program
             Console.ResetColor();
 
             string filePath = "foglalt_szallasok.csv";
-
-            using StreamWriter writer = new StreamWriter(filePath, true);
-
+            using StreamWriter writer = new StreamWriter(filePath, false);
             writer.WriteLine("Id;SzallasNev;Varos;Ar;Ertekeles;CheckIn;CheckOut");
             writer.WriteLine($"{talaltSzallas.Id};{talaltSzallas.PopertyName};{talaltSzallas.Location};{talaltSzallas.Price};{talaltSzallas.Rating};{talaltSzallas.CheckInTime};{talaltSzallas.CheckOutTime}");
         }
@@ -251,7 +276,6 @@ internal class Program
             Console.ResetColor();
         }
     }
-
 
     private static void OsszesKiiras(List<Szallas> szallasList)
     {
@@ -275,17 +299,18 @@ internal class Program
     {
         foreach (DataRow row in adatok.Rows)
         {
-            Szallas szallas = new Szallas();
-
-            szallas.Id = Convert.ToInt32(row[0]);
-            szallas.HostName = row[1].ToString();
-            szallas.PopertyName = row[2].ToString();
-            szallas.Location = row[3].ToString();
-            szallas.Price = Convert.ToDouble(row[4]);
-            szallas.Rating = Convert.ToInt32(row[5]);
-            szallas.CheckInTime = row[6].ToString();
-            szallas.CheckOutTime = row[7].ToString();
-            szallas.Avaibality = Convert.ToBoolean(Convert.ToInt32(row[8]));
+            Szallas szallas = new Szallas
+            {
+                Id = Convert.ToInt32(row[0]),
+                HostName = row[1].ToString(),
+                PopertyName = row[2].ToString(),
+                Location = row[3].ToString(),
+                Price = Convert.ToDouble(row[4]),
+                Rating = Convert.ToInt32(row[5]),
+                CheckInTime = row[6].ToString(),
+                CheckOutTime = row[7].ToString(),
+                Avaibality = Convert.ToBoolean(Convert.ToInt32(row[8]))
+            };
 
             szallasList.Add(szallas);
         }
