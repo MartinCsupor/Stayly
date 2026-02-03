@@ -99,7 +99,12 @@ internal class Program
         Console.Write("Elérhető? (1 = igen, 0 = nem): ");
         int elerheto = Convert.ToInt32(Console.ReadLine().ToLower().Trim());
 
-       
+        var eredmeny = DatabaseServices.szallasFeltoltes(connectionString, hostName, propertyName, location, price, rating, checkIn, checkOut, elerheto);
+
+
+        Console.WriteLine(eredmeny);
+        Console.ResetColor();
+
     }
 
     private static void SzallasokVarosSzerint(List<Szallas> lista)
@@ -113,8 +118,9 @@ internal class Program
 
         foreach (var sz in lista)
         {
+
             if (sz.Location.Equals(varos, StringComparison.OrdinalIgnoreCase))
-           
+
             {
                 talalhato = true;
                 PopertyName = sz.PopertyName;
@@ -232,6 +238,7 @@ internal class Program
             Console.ResetColor();
 
             string filePath = "foglalt_szallasok.csv";
+
             using StreamWriter writer = new StreamWriter(filePath, false);
 
             writer.WriteLine("Id;SzallasNev;Varos;Ar;Ertekeles;CheckIn;CheckOut");
