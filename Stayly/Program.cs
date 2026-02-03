@@ -113,7 +113,8 @@ internal class Program
 
         foreach (var sz in lista)
         {
-            if (sz.Location.ToLower().Equals(varos, StringComparison.OrdinalIgnoreCase))
+            if (sz.Location.Equals(varos, StringComparison.OrdinalIgnoreCase))
+           
             {
                 talalhato = true;
                 PopertyName = sz.PopertyName;
@@ -232,6 +233,7 @@ internal class Program
 
             string filePath = "foglalt_szallasok.csv";
             using StreamWriter writer = new StreamWriter(filePath, false);
+
             writer.WriteLine("Id;SzallasNev;Varos;Ar;Ertekeles;CheckIn;CheckOut");
             writer.WriteLine($"{talaltSzallas.Id};{talaltSzallas.PopertyName};{talaltSzallas.Location};{talaltSzallas.Price};{talaltSzallas.Rating};{talaltSzallas.CheckInTime};{talaltSzallas.CheckOutTime}");
         }
@@ -250,7 +252,6 @@ internal class Program
             "{0,-13} | {1,-25} | {2,-32} | {3,-25} | {4,20:N0} Ft | {5,6} | {6,-15} | {7,-15} | {8,-15}",
             "ID", "Host", "Szállás", "Város", "Ár", "Értékelés", "Elérhető", "Becsekkolás", "Kicsekkolás"
         );
-        Console.WriteLine(new string('-', 205));
         Console.ResetColor();
 
         foreach (var szallas in szallasList)
