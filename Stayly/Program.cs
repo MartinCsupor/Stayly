@@ -99,41 +99,7 @@ internal class Program
         Console.Write("Elérhető? (1 = igen, 0 = nem): ");
         int elerheto = Convert.ToInt32(Console.ReadLine().ToLower().Trim());
 
-        string query = "INSERT INTO szallas (hostName, popertyName, location, price, rating, checkInTime, checkOutTime, elerhetoseg) " +
-                       "VALUES (@host, @name, @loc, @price, @rating, @checkIn, @checkOut, @ava)";
-
-        try
-        {
-            using (MySqlConnection conn = new MySqlConnection(connectionString))
-            {
-                conn.Open();
-                using (MySqlCommand cmd = new MySqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@host", hostName);
-                    cmd.Parameters.AddWithValue("@name", propertyName);
-                    cmd.Parameters.AddWithValue("@loc", location);
-                    cmd.Parameters.AddWithValue("@price", price);
-                    cmd.Parameters.AddWithValue("@rating", rating);
-                    cmd.Parameters.AddWithValue("@checkIn", checkIn);
-                    cmd.Parameters.AddWithValue("@checkOut", checkOut);
-                    cmd.Parameters.AddWithValue("@ava", elerheto);
-
-                    int result = cmd.ExecuteNonQuery();
-                    if (result > 0)
-                    {
-                        Console.WriteLine("Szállás sikeresen felvéve az adatbázisba!");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Nem sikerült a beszúrás!");
-                    }
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Hiba történt: {ex.Message}");
-        }
+       
     }
 
     private static void SzallasokVarosSzerint(List<Szallas> lista)
