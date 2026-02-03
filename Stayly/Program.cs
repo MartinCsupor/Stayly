@@ -101,43 +101,8 @@ internal class Program
 
         var eredmeny = DatabaseServices.szallasFeltoltes(connectionString, hostName, propertyName, location, price, rating, checkIn, checkOut, elerheto);
 
-<<<<<<< HEAD
         Console.WriteLine(eredmeny);
         Console.ResetColor();
-=======
-        try
-        {
-            using (MySqlConnection conn = new MySqlConnection(connectionString))
-            {
-                conn.Open();
-                using (MySqlCommand cmd = new MySqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@host", hostName);
-                    cmd.Parameters.AddWithValue("@name", propertyName);
-                    cmd.Parameters.AddWithValue("@loc", location);
-                    cmd.Parameters.AddWithValue("@price", price);
-                    cmd.Parameters.AddWithValue("@rating", rating);
-                    cmd.Parameters.AddWithValue("@checkIn", checkIn);
-                    cmd.Parameters.AddWithValue("@checkOut", checkOut);
-                    cmd.Parameters.AddWithValue("@ava", elerheto);
-
-                    int result = cmd.ExecuteNonQuery();
-                    if (result > 0)
-                    {
-                        Console.WriteLine("Szállás sikeresen felvéve az adatbázisba!");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Nem sikerült a beszúrás!");
-                    }
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Hiba történt: {ex.Message}");
-        }
->>>>>>> 4e23f80dcf62e6b7714a3b0d9e56954df281f8bc
     }
 
     private static void SzallasokVarosSzerint(List<Szallas> lista)
@@ -151,11 +116,7 @@ internal class Program
 
         foreach (var sz in lista)
         {
-<<<<<<< HEAD
-            if (sz.Location .Equals(varos, StringComparison.OrdinalIgnoreCase))
-=======
-            if (sz.Location.ToLower().Equals(varos, StringComparison.OrdinalIgnoreCase))
->>>>>>> 4e23f80dcf62e6b7714a3b0d9e56954df281f8bc
+            if (sz.Location.Equals(varos, StringComparison.OrdinalIgnoreCase))
             {
                 talalhato = true;
                 PopertyName = sz.PopertyName;
@@ -273,13 +234,9 @@ internal class Program
             Console.ResetColor();
 
             string filePath = "foglalt_szallasok.csv";
-<<<<<<< HEAD
 
             using StreamWriter writer = new StreamWriter(filePath, false);
 
-=======
-            using StreamWriter writer = new StreamWriter(filePath, false);
->>>>>>> 4e23f80dcf62e6b7714a3b0d9e56954df281f8bc
             writer.WriteLine("Id;SzallasNev;Varos;Ar;Ertekeles;CheckIn;CheckOut");
             writer.WriteLine($"{talaltSzallas.Id};{talaltSzallas.PopertyName};{talaltSzallas.Location};{talaltSzallas.Price};{talaltSzallas.Rating};{talaltSzallas.CheckInTime};{talaltSzallas.CheckOutTime}");
         }
